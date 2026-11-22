@@ -13,6 +13,9 @@ sdn/
 ├── run_jupyter.bat       # run_jupyter.bat wsl | win
 ├── requirements.txt      # library analisis + Jupyter
 ├── data/topology.json    # topologi mesh 10 switch (delay, bandwidth, loss)
+├── colab/                # versi NetworkX murni (tanpa Ryu/Mininet/WSL) — jalan di Google Colab
+│   ├── 01_optimasi_jaringan_networkx_colab.ipynb
+│   └── 02_deteksi_ddos_networkx_colab.ipynb
 ├── notebooks/
 │   ├── 00_cek_environment.ipynb     # cek versi + smoke test Ryu simple_switch_13 + pingAll
 │   ├── 01_optimasi_jaringan.ipynb   # optimasi routing + traffic engineering
@@ -32,17 +35,28 @@ bash run_jupyter.sh               # buka URL yang tampil, jalankan notebook 00 �
 
 ### Windows
 ```bat
-setup_env.bat          :: venv Windows (mode sim) + Ryu/Mininet di WSL2
+setup_env.bat          :: venv Windows (mode sim) + Ryu/Mininet di WSL2 (log: setup_env.log, setup_env_wsl.log)
 run_jupyter.bat wsl    :: mode mininet (emulasi asli, di WSL2)
 run_jupyter.bat win    :: mode sim (tanpa Mininet)
 ```
-Jika WSL2 belum ada: buka PowerShell sebagai Administrator, jalankan `wsl --install -d Ubuntu-22.04`, restart, lalu jalankan `setup_env.bat wsl`.
+Jika WSL2 belum ada: buka PowerShell sebagai Administrator, jalankan `wsl --install -d Ubuntu`, restart, lalu jalankan `setup_env.bat wsl`.
 
 ### Catatan versi penting
 - **Ryu 4.34 tidak berjalan di Python ≥ 3.10** (eventlet 0.30.2 gagal: `TypeError: cannot set 'is_timeout' attribute of immutable type 'TimeoutError'`). Karena itu `setup_env.sh` mencari Python 3.9/3.8. Jika tidak ada, script memasangnya lewat PPA deadsnakes (Ubuntu) atau `uv`.
 - Ryu dipasang dengan `setuptools==67.6.1` dan `pip install --no-build-isolation ryu==4.34 eventlet==0.30.2`.
 - Library Python Mininet diambil dari paket apt `mininet` (ditautkan ke venv), agar versinya sama dengan `mnexec`/`mn` sistem.
 - Bila modul kernel `openvswitch` tidak tersedia (sebagian kernel WSL2), notebook otomatis memakai datapath userspace OVS (`datapath='user'`).
+
+## Alternatif tanpa WSL: notebook Google Colab (NetworkX)
+Bila instalasi WSL/Mininet gagal, gunakan folder `colab/`. Notebook di sana hanya memakai networkx, numpy, pandas, matplotlib, dan scikit-learn, yang semuanya sudah tersedia di Colab.
+1. Buka https://colab.research.google.com → **File → Upload notebook**, lalu pilih file `.ipynb` dari folder `colab/`. Bisa juga dibuka langsung dari GitHub.
+2. **Runtime → Run all**. Ubah parameter lewat form (slider/dropdown/checkbox) di tiap sel.
+3. Hasil tersimpan di `hasil_networkx/`. Centang `UNDUH_ZIP` di sel terakhir untuk mengunduhnya.
+
+| Notebook | Isi |
+|---|---|
+| `01_optimasi_jaringan_networkx_colab` | topologi (acak/contoh 10 switch/grid/ring) + region, trafik non-IID dengan delay antrean M/M/1, 5 algoritma routing vs oracle, **RL dengan reward terurai** (+tiba, ±kemajuan, −delay, −hop, −loop, −kongesti, −timeout) beserta slider replay per episode, **Federated Q-Routing** (global vs lokal vs terpusat vs oracle, agregasi visit-weighted/FedAvg), traffic engineering load-aware (mengikuti proyek *reinforcement_and_federated_network*) |
+| `02_deteksi_ddos_networkx_colab` | topologi pohon NetworkX + simulator controller (flow table, packet_in, drop rule) dengan skema data sama seperti app Ryu, serangan SYN/UDP/ICMP (+spoofing) & flash crowd, fitur per jendela, z-score vs DT/RF/KNN/SVM, jenis serangan, port sumber, demo mitigasi online |
 
 ## Mode notebook
 | Mode | Syarat | Isi |

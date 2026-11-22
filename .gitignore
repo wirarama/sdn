@@ -5,3 +5,6 @@ results/
 ryu_apps/__pycache__/
 .ipynb_checkpoints/
 .sdn_env
+.wsl_distro
+setup_env.log
+setup_env_wsl.log
