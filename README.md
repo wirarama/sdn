@@ -14,9 +14,12 @@ sdn/
 ├── requirements.txt      # library analisis + Jupyter
 ├── data/topology.json    # topologi mesh 10 switch (delay, bandwidth, loss)
 ├── colab/                # versi NetworkX murni (tanpa Ryu/Mininet/WSL) — jalan di Google Colab
+│   ├── tutorial_simulasi_jaringan_networkx.ipynb   # TUTORIAL: topologi, metrik, simulasi paket, ekspor dataset
 │   ├── 01_optimasi_jaringan_networkx_colab.ipynb
 │   └── 02_deteksi_ddos_networkx_colab.ipynb
 ├── notebooks/
+│   ├── tutorial_01_mininet.ipynb      # TUTORIAL: emulasi Mininet, berbagai topologi, ekspor dataset
+│   ├── tutorial_02_ryu.ipynb          # TUTORIAL: controller Ryu (learning switch, routing, monitoring, REST, mitigasi)
 │   ├── 00_cek_environment.ipynb     # cek versi + smoke test Ryu simple_switch_13 + pingAll
 │   ├── 01_optimasi_jaringan.ipynb   # optimasi routing + traffic engineering
 │   └── 02_deteksi_ddos.ipynb        # deteksi & mitigasi DDoS (statistik + ML)
@@ -46,6 +49,17 @@ Jika WSL2 belum ada: buka PowerShell sebagai Administrator, jalankan `wsl --inst
 - Ryu dipasang dengan `setuptools==67.6.1` dan `pip install --no-build-isolation ryu==4.34 eventlet==0.30.2`.
 - Library Python Mininet diambil dari paket apt `mininet` (ditautkan ke venv), agar versinya sama dengan `mnexec`/`mn` sistem.
 - Bila modul kernel `openvswitch` tidak tersedia (sebagian kernel WSL2), notebook otomatis memakai datapath userspace OVS (`datapath='user'`).
+
+## Tutorial langkah demi langkah
+Tiga notebook tutorial menjelaskan simulasi jaringan dari dasar, dengan hasil yang bisa dipakai untuk optimasi jaringan dan deteksi DDoS:
+
+| Notebook | Fokus | Keluaran |
+|---|---|---|
+| `notebooks/tutorial_01_mininet.ipynb` | Emulasi **Mininet** tanpa controller: katalog topologi (single/linear/tree/ring/mesh/fat-tree/JSON), mode standalone & RSTP, ukur RTT/iperf, uji link putus | topologi JSON + matriks RTT (optimasi); rekaman `tcpdump` + fitur per jendela (DDoS) |
+| `notebooks/tutorial_02_ryu.ipynb` | Controller **Ryu**: learning switch, penemuan topologi (LLDP) + rute shortest-path (NetworkX), monitoring flow/port stats, REST, blokir port | topologi JSON hasil penemuan + utilisasi link (optimasi); `flow_stats.csv` (DDoS) |
+| `colab/tutorial_simulasi_jaringan_networkx.ipynb` | **NetworkX saja** (Colab, tanpa WSL): galeri topologi, metrik graf, model antrean, simulasi paket discrete-event, uji ketahanan | topologi JSON + flow berlabel + fitur per jendela |
+
+Alur keluaran: topologi JSON yang diekspor tutorial bisa dimuat `01_optimasi_jaringan.ipynb`/notebook optimasi Colab; dataset flow/fitur diproses `02_deteksi_ddos.ipynb`.
 
 ## Alternatif tanpa WSL: notebook Google Colab (NetworkX)
 Bila instalasi WSL/Mininet gagal, gunakan folder `colab/`. Notebook di sana hanya memakai networkx, numpy, pandas, matplotlib, dan scikit-learn, yang semuanya sudah tersedia di Colab.
